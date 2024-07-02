@@ -1,3 +1,5 @@
+pip install streamlit yfinance tensorflow scikit-learn
+
 import streamlit as st
 import yfinance as yf
 import tensorflow as tf
