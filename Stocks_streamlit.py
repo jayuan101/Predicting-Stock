@@ -1,4 +1,4 @@
-!pip install streamlit
+
 !pip instal yfinance
 !pip instal tensorflow 
 !pip instal scikit-learn
