@@ -1,3 +1,5 @@
+pip install yfinance
+
 import streamlit as st
 import yfinance as yf
 import tensorflow as tf
@@ -6,7 +8,18 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 
-# Define Streamlit application
+# Function to create sequences
+def create_sequences(data, seq_length):
+    xs = []
+    ys = []
+    for i in range(len(data) - seq_length):
+        x = data.iloc[i:(i+seq_length)].values
+        y = data.iloc[i+seq_length].values
+        xs.append(x)
+        ys.append(y)
+    return np.array(xs), np.array(ys)
+
+# Streamlit application
 st.title("Stock Price Prediction with LSTM")
 
 # Sidebar for stock ticker input
@@ -24,16 +37,6 @@ data.reset_index(drop=True, inplace=True)
 data['Close'] = data['Close'].astype('float32')
 
 # Create sequences for training
-def create_sequences(data, seq_length):
-    xs = []
-    ys = []
-    for i in range(len(data) - seq_length):
-        x = data.iloc[i:(i+seq_length)].values
-        y = data.iloc[i+seq_length].values
-        xs.append(x)
-        ys.append(y)
-    return np.array(xs), np.array(ys)
-
 seq_length = 60
 X, y = create_sequences(data[['Close']], seq_length)
 
