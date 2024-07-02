@@ -1,18 +1,10 @@
-
-!pip instal yfinance
-!pip instal tensorflow 
-!pip instal scikit-learn
-
 import streamlit as st
 import yfinance as yf
 import tensorflow as tf
-from tensorflow.keras.layers import Conv1D, LSTM, Dense, Dropout, Bidirectional, TimeDistributed
-from tensorflow.keras.layers import MaxPooling1D, Flatten
-from tensorflow.keras.regularizers import L1, L2
-from tensorflow.keras.metrics import Accuracy, RootMeanSquaredError
+import numpy as np
+from tensorflow.keras.layers import LSTM, Dense, Dropout
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.utils import plot_model
-from sklearn.metrics import explained_variance_score, mean_poisson_deviance, mean_gamma_deviance, r2_score, max_error
+from sklearn.metrics import r2_score
 
 # Define Streamlit application
 st.title("Stock Price Prediction with LSTM")
