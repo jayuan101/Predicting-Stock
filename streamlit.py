@@ -1,93 +1,47 @@
-
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
-import yfinance as yf
+# Title and Description
+st.title("Interactive Stock Data Viewer")
+st.write("Upload a CSV file containing stock data to interact with it.")
 
-# Function to fetch stock data
-def get_stock_data(stock_symbol, start_date, end_date):
-    stock_data = yf.download(stock_symbol, start=start_date, end=end_date, progress=False)
-    return stock_data['Adj Close']
+# File Upload
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
-# Function to calculate simple moving averages (SMAs)
-def calculate_sma(stock_data, short_window=20, long_window=200):
-    short_sma = stock_data.rolling(window=short_window).mean()
-    long_sma = stock_data.rolling(window=long_window).mean()
-    return short_sma, long_sma
-
-# Function to create an interactive graph with SMAs
-def create_stock_graph(stock_data, short_sma, long_sma, title):
-    fig = make_subplots(rows=1, cols=1, shared_xaxes=True, subplot_titles=[title])
-
-    #Add Range Slider and Selectors
-    fig.update_layout(
-    xaxis=dict(
-        rangeselector=dict(
-            buttons=list([
-                dict(count=1,
-                     label="1m",
-                     step="month",
-                     stepmode="backward"),
-                dict(count=6,
-                     label="6m",
-                     step="month",
-                     stepmode="backward"),
-                dict(count=1,
-                     label="YTD",
-                     step="year",
-                     stepmode="todate"),
-                dict(count=1,
-                     label="1y",
-                     step="year",
-                     stepmode="backward"),
-                dict(step="all")
-            ])
-        ),
-        rangeslider=dict(
-            visible=False
-        ),
-        type="date"
-    ))
-
-    trace_stock = go.Scatter(x=stock_data.index, y=stock_data.values, mode='lines', name=title)
-    trace_short_sma = go.Scatter(x=short_sma.index, y=short_sma.values, mode='lines', name='20-day SMA', line=dict(color="#20fc03"))
-    trace_long_sma = go.Scatter(x=long_sma.index, y=long_sma.values, mode='lines', name='200-day SMA', line=dict(color="#fc0303"))
-
-    fig.add_trace(trace_stock, row=1, col=1)
-    fig.add_trace(trace_short_sma, row=1, col=1)
-    fig.add_trace(trace_long_sma, row=1, col=1)
+if uploaded_file is not None:
+    # Read the CSV file
+    df = pd.read_csv(uploaded_file)
     
-    fig.update_layout(title_text=title)
-    fig.update_xaxes(title_text='Date', row=1, col=1)
-    fig.update_yaxes(title_text='Price', row=1, col=1)
+    # Display the data
+    st.write("### Data Preview")
+    st.dataframe(df.head())
 
-    return fig
+    # Select Columns to Display
+    columns = st.multiselect("Select columns to display", df.columns.tolist(), default=df.columns.tolist())
+    st.write("### Filtered Data")
+    st.dataframe(df[columns])
 
-# Main Streamlit app
-def main():
-    st.title("Stocks Dashboard")
-
-    # List of stock symbols
-    stock_symbols = ["AAPL", "GOOG", "MSFT", "AMZN", "SATS"]
-
-    # Date range for stock data (default to present date)
-    end_date = pd.to_datetime("today")
-    start_date = end_date - pd.DateOffset(years=3)  # 3 years ago
-    
-    #Display Most Recent Date
-    st.text('Last Update Date: ' + str(end_date))
-    
-    # Fetch and display graphs for each stock
-    for symbol in stock_symbols:
-        st.subheader(f"Stock: {symbol}")
-        stock_data = get_stock_data(symbol, start_date, end_date)
+    # Filter by Date
+    if 'Date' in df.columns:
+        df['Date'] = pd.to_datetime(df['Date'])
+        start_date = st.date_input("Start date", df['Date'].min())
+        end_date = st.date_input("End date", df['Date'].max())
         
-        # Calculate Simple Moving Averages (SMAs)
-        short_sma, long_sma = calculate_sma(stock_data)
-        
-        # Display only the last year of data
-        stock_data_last_year = stock_data.tail(504)  # Assuming 252 trading days in a year
-        short_sma_last_year, long_sma_last_year = short_sma.tail(504), long_sma.tail(504)
-        
-if __name__ == "__main__":
-    main()
+        filtered_df = df[(df['Date'] >= pd.Timestamp(start_date)) & (df['Date'] <= pd.Timestamp(end_date))]
+        st.write(f"### Data from {start_date} to {end_date}")
+        st.dataframe(filtered_df)
+
+        # Plot the data
+        st.write("### Stock Price Over Time")
+        selected_column = st.selectbox("Select a column to plot", df.columns[1:], index=1)  # Assuming Date is the first column
+        plt.figure(figsize=(10, 5))
+        plt.plot(filtered_df['Date'], filtered_df[selected_column])
+        plt.xlabel("Date")
+        plt.ylabel(selected_column)
+        plt.title(f"{selected_column} over Time")
+        st.pyplot(plt)
+    else:
+        st.write("The uploaded CSV file does not contain a 'Date' column. Please upload a valid stock data file.")
+else:
+    st.write("Please upload a CSV file to proceed.")
