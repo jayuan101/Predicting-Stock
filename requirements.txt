@@ -2,3 +2,4 @@ streamlit>=0.78.0
 yfinance
 pandas
 matplotlib
+tensorflow
