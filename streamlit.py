@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1-V2T97fWF9HCF3cOAKCENoo_fBnHGtRv
 """
 
-!pip install yfinance
+pip install yfinance
 import streamlit as st
 import yfinance as yf
 import tensorflow as tf
