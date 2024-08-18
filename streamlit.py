@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.layers import Conv1D, LSTM, Dense, Dropout, Bidirectional, TimeDistributed, MaxPooling1D, Flatten
 
 # News API Key (replace with your own)
-NEWS_API_KEY = 'your_newsapi_key_here'
+NEWS_API_KEY = 'pub_511880a4666407f41dc59e7821eba6371a262'
 
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
