@@ -1,6 +1,4 @@
 import streamlit as st
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import pandas as pd
 
 import appdirs as ad
@@ -93,7 +91,5 @@ def main():
         stock_data_last_year = stock_data.tail(504)  # Assuming 252 trading days in a year
         short_sma_last_year, long_sma_last_year = short_sma.tail(504), long_sma.tail(504)
         
-        st.plotly_chart(create_stock_graph(stock_data_last_year, short_sma_last_year, long_sma_last_year, title=symbol))
-
 if __name__ == "__main__":
     main()
