@@ -6,7 +6,7 @@ import yfinance as yf
 
 # Function to fetch stock data
 def get_stock_data(stock_symbol, start_date, end_date):
-    stock_data = yf.download(stock_symbol, start=start_date, end=end_date)
+    stock_data = yf.download(stock_symbol, start=start_date, end=end_date, progress=False)
     return stock_data['Adj Close']
 
 # Function to calculate simple moving averages (SMAs)
