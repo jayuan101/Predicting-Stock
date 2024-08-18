@@ -3,12 +3,16 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import tensorflow as tf
+import requests
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.layers import Conv1D, LSTM, Dense, Dropout, Bidirectional, TimeDistributed, MaxPooling1D, Flatten
 
+# News API Key (replace with your own)
+NEWS_API_KEY = 'your_newsapi_key_here'
+
 # Title and Description
-st.title("Interactive Stock Data Viewer & Model Training")
-st.write("Enter a stock ticker symbol to visualize the stock data and train a predictive model.")
+st.title("Interactive Stock Data Viewer, Model Training & News Feed")
+st.write("Enter a stock ticker symbol to visualize the stock data, train a predictive model, and view related news.")
 
 # Input for stock ticker
 ticker_symbol = st.text_input("Enter stock ticker symbol (e.g., AAPL, MSFT)", "AAPL")
@@ -83,6 +87,20 @@ if ticker_symbol:
             st.write("### Training History")
             st.line_chart(history.history['mse'])
             st.line_chart(history.history['mae'])
+
+        # Fetching and displaying news
+        st.write(f"### {ticker_symbol.upper()} News Feed")
+        news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={NEWS_API_KEY}"
+        news_response = requests.get(news_url).json()
+
+        if news_response.get("status") == "ok":
+            for article in news_response.get("articles", []):
+                st.write(f"**{article['title']}**")
+                st.write(f"{article['description']}")
+                st.write(f"[Read more]({article['url']})")
+                st.write("---")
+        else:
+            st.write("No news found for the given ticker symbol.")
     else:
         st.write("No data found for the given ticker symbol. Please try another symbol.")
 else:
