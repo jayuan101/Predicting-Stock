@@ -94,11 +94,12 @@ if ticker_symbol:
             sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
             st.pyplot(fig)
 
-        # Fetching news data
-        st.write(f"### Latest News for {ticker_symbol.upper()}")
-        news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={NEWS_API_KEY}"
-        news_response = requests.get(news_url)
-        news_data = news_response.json()
+# replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
+url = 'https://www.alphavantage.co/query?function=SMA&symbol=IBM&interval=weekly&time_period=10&series_type=open&apikey=API_key'
+r = requests.get(url)
+data = r.json()
+
+print(data)
 
         if news_data["status"] == "ok":
             articles = news_data["articles"]
