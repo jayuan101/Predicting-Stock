@@ -12,12 +12,19 @@ from xgboost import plot_importance
 NEWS_API_KEY = st.secrets['API_key']
 
 def fetch_news(ticker_symbol, api_key):
-    url = f"https://financialmodelingprep.com/api/v3/search?query={ticker_symbol}&apiKey={API_key}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json().get('articles', [])
-    else:
-        return []
+  """Fetches news articles related to the stock ticker symbol."""
+  query = f"https://financialmodelingprep.com/api/v3/search?query={ticker_symbol}&sortBy=relevancy"
+  response = NEWS_API_KEY(API_key).get_top_headlines(
+      q=query,
+      language="en",  # Adjust language if needed
+  )
+  
+  if response["status"] == "ok":
+    return response["articles"]
+  else:
+    print(f"Error fetching news: {response['status']}")
+    return []
+
 
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
@@ -30,12 +37,6 @@ ticker_symbol = st.text_input("Enter stock ticker symbol (e.g., AAPL, MSFT)", "A
 start_date = st.date_input("Start date", pd.to_datetime("2022-01-01"))
 end_date = st.date_input("End date", pd.to_datetime("today"))
 
-#Displace News
-st.header("Latest news"):
-for article in news_articles
-    st.subheader(article['title'])
-    st.text(article['content']
-            st.image(article['image'])
 
 # Fetching stock data
 if ticker_symbol:
