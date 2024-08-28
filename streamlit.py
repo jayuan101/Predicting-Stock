@@ -12,13 +12,6 @@ import requests
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
 
-# replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
-url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=API_key'
-r = requests.get(url)
-data = r.json()
-
-print(data)
-
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
 st.write("Enter a stock ticker symbol to visualize the stock data, train an XGBoost model, and view related news.")
@@ -29,7 +22,6 @@ ticker_symbol = st.text_input("Enter stock ticker symbol (e.g., AAPL, MSFT)", "A
 # Date range selection
 start_date = st.date_input("Start date", pd.to_datetime("2022-01-01"))
 end_date = st.date_input("End date", pd.to_datetime("today"))
-
 
 # Fetching stock data
 if ticker_symbol:
@@ -101,3 +93,21 @@ if ticker_symbol:
             corr = pd.DataFrame(train_X, columns=[f'lag_{i}' for i in range(1, n_lags + 1)]).corr()
             sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
             st.pyplot(fig)
+
+        # Fetching news data
+        st.write(f"### Latest News for {ticker_symbol.upper()}")
+        news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={NEWS_API_KEY}"
+        news_response = requests.get(news_url)
+        news_data = news_response.json()
+
+        if news_data["status"] == "ok":
+            articles = news_data["articles"]
+            if articles:
+                for article in articles[:5]:  # Limit to 5 news articles
+                    st.write(f"#### {article['title']}")
+                    st.write(article['description'])
+                    st.write(f"[Read more]({article['url']})")
+            else:
+                st.write("No news articles found.")
+        else:
+            st.write("Failed to retrieve news.")
