@@ -31,7 +31,7 @@ start_date = st.date_input("Start date", pd.to_datetime("2022-01-01"))
 end_date = st.date_input("End date", pd.to_datetime("today"))
 
 #Displace News
-st.header("Latest news")
+st.header("Latest news"):
 for article in news_articles
     st.subheader(article['title'])
     st.text(article['content']
