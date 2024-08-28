@@ -51,12 +51,11 @@ def preprocess_data(df):
 stock_data = preprocess_data(stock_data)
 data = stock_data['Price'].values
 
-# Creating lagged features
 def create_lagged_features(data, n_lags=5):
     df = pd.DataFrame(data)
     for i in range(1, n_lags+1):
         df[f'lag_{i}'] = df[0].shift(i)
-    df.dropna(inplace=True) # Fixed indentation
+    df.dropna(inplace=True)  # Fixed indentation
     return df
 
 n_lags = 5
@@ -79,8 +78,10 @@ if st.button("Train Model"):
     
 st.success("Model training complete!")
 
+
 # Once the model is trained, you can now safely make predictions
-predictions = model.predict(test_X)
+if model is not None:  # Check if model is trained before prediction
+    predictions = model.predict(test_X)
     
 # Model performance metrics
 mse = mean_squared_error(test_Y, predictions)
