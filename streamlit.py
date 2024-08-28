@@ -95,7 +95,7 @@ if ticker_symbol:
             st.pyplot(fig)
 
 # Fetching and displaying news
-news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={NEWS_API_KEY}"
+news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={API_key}"
 news_response = requests.get(news_url)
 news_data = news_response.json()
 
