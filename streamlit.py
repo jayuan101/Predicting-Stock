@@ -72,12 +72,15 @@ train_X, test_X, train_Y, test_Y = train_test_split(X, y, test_size=0.2, random_
 model = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=100, learning_rate=0.1, max_depth=5)
 
 if st.button("Train Model"):
-  with st.spinner("Training the XGBoost model..."):
-    model.fit(train_X, train_Y)
-  st.success("Model training complete!") #unindent this line to align with the with statement
-
-# Predictions
+    with st.spinner("Training the XGBoost model..."):
+        model.fit(train_X, train_Y)
+    st.success("Model training complete!")
+    
+# After training, you can safely make predictions
 predictions = model.predict(test_X)
+
+
+# Performance evaluation
 mse = mean_squared_error(test_Y, predictions)
 mae = mean_absolute_error(test_Y, predictions)
 
