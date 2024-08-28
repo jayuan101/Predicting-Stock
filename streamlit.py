@@ -81,11 +81,6 @@ if st.button("Train Model"):
 if model is not None:  # Check if model is trained before prediction
     predictions = model.predict(test_X)
 
-
-# Once the model is trained, you can now safely make predictions
-if model is not None:  # Check if model is trained before prediction
-    predictions = model.predict(test_X)
-    
 # Model performance metrics
 mse = mean_squared_error(test_Y, predictions)
 mae = mean_absolute_error(test_Y, predictions)
