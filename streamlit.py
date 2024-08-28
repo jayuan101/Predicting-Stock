@@ -9,7 +9,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from xgboost import plot_importance
 
 # News API Key (replace with your own)
-NEWS_API_KEY = 'lfmBz5Fb1dFrSIVt2U_8XZSewcmpTZp4'
+NEWS_API_KEY = st.secrets['API_key']
 
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
