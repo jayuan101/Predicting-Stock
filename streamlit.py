@@ -11,6 +11,14 @@ from xgboost import plot_importance
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
 
+def fetch_news(ticker_symbol, api_key):
+    url = f"https://financialmodelingprep.com/api/v3/search?query=AA{ticker_symbol}&apiKey={API_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json().get('articles', [])
+    else:
+        return []
+
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
 st.write("Enter a stock ticker symbol to visualize the stock data, train an XGBoost model, and view related news.")
