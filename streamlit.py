@@ -25,6 +25,15 @@ def fetch_news(ticker_symbol, api_key):
     print(f"Error fetching news: {response['status']}")
     return []
 
+  if news_articles:
+    st.header("Latest news related to " + ticker_symbol.upper())
+    for article in news_articles[:5]:  # Display only the top 5 articles
+      st.subheader(article["title"])
+      summary = article["description"][:100] + "..."  # Truncate summary
+      st.text(summary)
+      if article["urlToImage"]:  # Check if image URL exists
+        st.image(article["urlToImage"])
+
 
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
