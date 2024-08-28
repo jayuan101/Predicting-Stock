@@ -11,29 +11,12 @@ from xgboost import plot_importance
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
 
-def fetch_news(ticker_symbol, api_key):
-  """Fetches news articles related to the stock ticker symbol."""
-  query = f"https://financialmodelingprep.com/api/v3/search?query={ticker_symbol}&sortBy=relevancy"
-  response = NEWS_API_KEY(API_key).get_top_headlines(
-      q=query,
-      language="en",  # Adjust language if needed
-  )
-  
-  if response["status"] == "ok":
-    return response["articles"]
-  else:
-    print(f"Error fetching news: {response['status']}")
-    return []
+# replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
+url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=API_key'
+r = requests.get(url)
+data = r.json()
 
-  if news_articles:
-    st.header("Latest news related to " + ticker_symbol.upper())
-    for article in news_articles[:5]:  # Display only the top 5 articles
-      st.subheader(article["title"])
-      summary = article["description"][:100] + "..."  # Truncate summary
-      st.text(summary)
-      if article["urlToImage"]:  # Check if image URL exists
-        st.image(article["urlToImage"])
-
+print(data)
 
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
