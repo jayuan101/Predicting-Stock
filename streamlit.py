@@ -7,6 +7,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from xgboost import plot_importance
+import requests
 
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
