@@ -71,53 +71,35 @@ train_X, test_X, train_Y, test_Y = train_test_split(X, y, test_size=0.2, random_
 # Model Creation with XGBoost
 model = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=100, learning_rate=0.1, max_depth=5)
 
+# Button to train the model
 if st.button("Train Model"):
     with st.spinner("Training the XGBoost model..."):
+        # Train the model on the training data
         model.fit(train_X, train_Y)
-    st.success("Model training complete!")
     
-# After training, you can safely make predictions
-predictions = model.predict(test_X)
+    st.success("Model training complete!")
 
+    # Once the model is trained, you can now safely make predictions
+    predictions = model.predict(test_X)
+    
+    # Model performance metrics
+    mse = mean_squared_error(test_Y, predictions)
+    mae = mean_absolute_error(test_Y, predictions)
 
-# Performance evaluation
-mse = mean_squared_error(test_Y, predictions)
-mae = mean_absolute_error(test_Y, predictions)
+    # Display the results
+    st.write(f"### Model Performance")
+    st.write(f"Mean Squared Error (MSE): {mse:.4f}")
+    st.write(f"Mean Absolute Error (MAE): {mae:.4f}")
 
-st.write(f"### Model Performance")
-st.write(f"Mean Squared Error (MSE): {mse:.4f}")
-st.write(f"Mean Absolute Error (MAE): {mae:.4f}")
+    # Plotting the feature importance using Matplotlib
+    st.write("### Feature Importance")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    plot_importance(model, ax=ax)
+    st.pyplot(fig)
 
-# Feature Importance Plot
-st.write("### Feature Importance")
-fig, ax = plt.subplots(figsize=(10, 6))
-plot_importance(model, ax=ax)
-st.pyplot(fig)
-
-# Correlation Heatmap (Optional, using Seaborn)
-st.write("### Correlation Heatmap")
-fig, ax = plt.subplots(figsize=(8, 6))
-corr = pd.DataFrame(train_X, columns=[f'lag_{i}' for i in range(1, n_lags+1)]).corr()
-sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
-st.pyplot(fig)
-
-# Fetching and displaying news
-st.write(f"### {ticker_symbol.upper()} News Feed")
-news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={NEWS_API_KEY}"
-news_response = requests.get(news_url).json()
-
-if news_response.get("status") == "ok":
-    for article in news_response.get("articles", []):
-        st.write(f"**{article['title']}**")
-        st.write(f"{article['description']}")
-        st.write(f"[Read more]({article['url']})")
-        st.write("---")
-else: # Corrected indentation for this else block
-    if news_response.get("articles"):
-        st.write("No news found for the given ticker symbol.")
-    else:
-        st.write("No data found for the given ticker symbol. Please try another symbol.")
-        st.write("Please enter a valid stock ticker symbol.")
-
-
-
+    # Correlation heatmap (optional)
+    st.write("### Correlation Heatmap")
+    fig, ax = plt.subplots(figsize=(8, 6))
+    corr = pd.DataFrame(train_X, columns=[f'lag_{i}' for i in range(1, n_lags + 1)]).corr()
+    sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
+    st.pyplot(fig)
