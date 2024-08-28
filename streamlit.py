@@ -8,9 +8,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from xgboost import plot_importance
 import requests
+import finnhub
 
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
+
+finnhub_client = finnhub.Client(api_key="API_key")
+
+print(finnhub_client.general_news('general', min_id=0))
+
 
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
@@ -98,6 +104,7 @@ if ticker_symbol:
 news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={'API_key'}"
 news_response = requests.get(news_url)
 news_data = news_response.json()
+
 
 if news_data.get("status") == "ok":
     articles = news_data.get("articles", [])
