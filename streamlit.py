@@ -70,4 +70,44 @@ if ticker_symbol:
             st.success("Model training complete!")
 
             # Make predictions
-            predictions = model.predict(test_X
+            predictions = model.predict(test_X)
+
+            # Model performance metrics
+            mse = mean_squared_error(test_Y, predictions)
+            mae = mean_absolute_error(test_Y, predictions)
+
+            # Display the results
+            st.write(f"### Model Performance")
+            st.write(f"Mean Squared Error (MSE): {mse:.4f}")
+            st.write(f"Mean Absolute Error (MAE): {mae:.4f}")
+
+            # Plotting the feature importance using Matplotlib
+            st.write("### Feature Importance")
+            fig, ax = plt.subplots(figsize=(10, 6))
+            plot_importance(model, ax=ax)
+            st.pyplot(fig)
+
+            # Correlation heatmap (optional)
+            st.write("### Correlation Heatmap")
+            fig, ax = plt.subplots(figsize=(8, 6))
+            corr = pd.DataFrame(train_X, columns=[f'lag_{i}' for i in range(1, n_lags + 1)]).corr()
+            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
+            st.pyplot(fig)
+
+# Fetching and displaying news
+news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={NEWS_API_KEY}"
+news_response = requests.get(news_url)
+news_data = news_response.json()
+
+if news_data.get("status") == "ok":
+    articles = news_data.get("articles", [])
+    if articles:
+        st.write(f"### Latest News for {ticker_symbol.upper()}")
+        for article in articles[:5]:  # Limit to 5 news articles
+            st.write(f"#### {article['title']}")
+            st.write(article['description'])
+            st.write(f"[Read more]({article['url']})")
+    else:
+        st.write("No news articles found.")
+else:
+    st.write("Failed to retrieve news.")
