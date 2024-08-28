@@ -75,8 +75,11 @@ if st.button("Train Model"):
     with st.spinner("Training the XGBoost model..."):
         # Train the model on the training data
         model.fit(train_X, train_Y)
-    
-st.success("Model training complete!")
+    st.success("Model training complete!")
+
+# Now you can safely make predictions if the model is trained
+if model is not None:  # Check if model is trained before prediction
+    predictions = model.predict(test_X)
 
 
 # Once the model is trained, you can now safely make predictions
