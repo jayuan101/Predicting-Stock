@@ -45,7 +45,7 @@ if ticker_symbol:
 
         def create_lagged_features(data, n_lags=5):
             df = pd.DataFrame(data)
-            for i in range(1, n_lags+1):
+            for i in range(1, n_lags + 1):
                 df[f'lag_{i}'] = df[0].shift(i)
             df.dropna(inplace=True)
             return df
@@ -70,45 +70,4 @@ if ticker_symbol:
             st.success("Model training complete!")
 
             # Make predictions
-            predictions = model.predict(test_X)
-
-            # Model performance metrics
-            mse = mean_squared_error(test_Y, predictions)
-            mae = mean_absolute_error(test_Y, predictions)
-
-            # Display the results
-            st.write(f"### Model Performance")
-            st.write(f"Mean Squared Error (MSE): {mse:.4f}")
-            st.write(f"Mean Absolute Error (MAE): {mae:.4f}")
-
-            # Plotting the feature importance using Matplotlib
-            st.write("### Feature Importance")
-            fig, ax = plt.subplots(figsize=(10, 6))
-            plot_importance(model, ax=ax)
-            st.pyplot(fig)
-
-            # Correlation heatmap (optional)
-            st.write("### Correlation Heatmap")
-            fig, ax = plt.subplots(figsize=(8, 6))
-            corr = pd.DataFrame(train_X, columns=[f'lag_{i}' for i in range(1, n_lags + 1)]).corr()
-            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
-            st.pyplot(fig)
-
-# replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
-url = 'https://www.alphavantage.co/query?function=SMA&symbol=IBM&interval=weekly&time_period=10&series_type=open&apikey=API_key'
-r = requests.get(url)
-data = r.json()
-
-print(data)
-
-        if news_data["status"] == "ok":
-            articles = news_data["articles"]
-            if articles:
-                for article in articles[:5]:  # Limit to 5 news articles
-                    st.write(f"#### {article['title']}")
-                    st.write(article['description'])
-                    st.write(f"[Read more]({article['url']})")
-            else:
-                st.write("No news articles found.")
-        else:
-            st.write("Failed to retrieve news.")
+            predictions = model.predict(test_X
