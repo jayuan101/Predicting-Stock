@@ -113,7 +113,7 @@ else: # Corrected indentation for this else block
     if news_response.get("articles"):
         st.write("No news found for the given ticker symbol.")
     else:
-st.write("No data found for the given ticker symbol. Please try another symbol.")
+        st.write("No data found for the given ticker symbol. Please try another symbol.")
 else:
     st.write("Please enter a valid stock ticker symbol.")
 
