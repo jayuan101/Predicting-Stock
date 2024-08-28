@@ -114,8 +114,7 @@ else: # Corrected indentation for this else block
         st.write("No news found for the given ticker symbol.")
     else:
         st.write("No data found for the given ticker symbol. Please try another symbol.")
-else:
-    st.write("Please enter a valid stock ticker symbol.")
+        st.write("Please enter a valid stock ticker symbol.")
 
 
 
