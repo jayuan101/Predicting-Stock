@@ -13,7 +13,7 @@ import finnhub
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
 
-finnhub_client = finnhub.Client(api_key="API_key")
+finnhub_client = finnhub.Client(api_key=API_key)
 
 print(finnhub_client.general_news('general', min_id=0))
 
@@ -99,11 +99,6 @@ if ticker_symbol:
             corr = pd.DataFrame(train_X, columns=[f'lag_{i}' for i in range(1, n_lags + 1)]).corr()
             sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
             st.pyplot(fig)
-
-# Fetching and displaying news
-news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={'API_key'}"
-news_response = requests.get(news_url)
-news_data = news_response.json()
 
 
 if news_data.get("status") == "ok":
