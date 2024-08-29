@@ -13,7 +13,7 @@ import finnhub
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
 
-finnhub_client = finnhub.Client(api_key=API_key)
+finnhub_client = finnhub.Client(api_key=NEWS_API_KEY)
 
 print(finnhub_client.general_news('general', min_id=0))
 
