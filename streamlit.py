@@ -8,14 +8,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from xgboost import plot_importance
 import requests
-import finnhub
 
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
-
-finnhub_client = finnhub.Client(api_key=NEWS_API_KEY)
-
-print(finnhub_client.general_news('general', min_id=0))
 
 
 # Title and Description
