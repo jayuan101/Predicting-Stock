@@ -12,7 +12,6 @@ import requests
 # News API Key (replace with your own)
 NEWS_API_KEY = st.secrets['API_key']
 
-
 # Title and Description
 st.title("Interactive Stock Data Viewer, Model Training & News Feed")
 st.write("Enter a stock ticker symbol to visualize the stock data, train an XGBoost model, and view related news.")
@@ -95,6 +94,10 @@ if ticker_symbol:
             sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
             st.pyplot(fig)
 
+# Fetching and displaying news
+news_url = f"https://newsapi.org/v2/everything?q={ticker_symbol}&apiKey={NEWS_API_KEY}"
+news_response = requests.get(news_url)
+news_data = news_response.json()
 
 if news_data.get("status") == "ok":
     articles = news_data.get("articles", [])
