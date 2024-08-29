@@ -95,7 +95,7 @@ if ticker_symbol:
             st.pyplot(fig)
 
 # Fetching and displaying news
-news_url = f"https://api.marketaux.com/v1/news/all HTTP/1.1{ticker_symbol}&apiKey={NEWS_API_KEY}"
+news_url = f"https://api.marketaux.com/v1/news/all?symbols=TSLA%2CAMZN%2CMSFT&filter_entities=true&language=en&api_token=FcZYuF9kxodITkle3siJB7Awn5yQS89wFxnSTP7X{ticker_symbol}&apiKey={NEWS_API_KEY}"
 news_response = requests.get(news_url)
 news_data = news_response.json()
 
