@@ -1,13 +1,4 @@
- numpy
-tensorflow
-streamlit
-yfinance
-pandas
-tensorflow
-xgboost
-matplotlib
-seaborn
-scikit-learn
+
 
 # Web framework
 streamlit==1.26.0
