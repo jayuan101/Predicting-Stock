@@ -67,18 +67,19 @@ def main():
 
     st.write(f"Training samples: {len(train_X)}, Testing samples: {len(test_X)}")
 
-    # Build CNN-LSTM Model
-    model = tf.keras.Sequential()
-    model.add(TimeDistributed(Conv1D(64, 3, activation='relu'), input_shape=(None, 1, 1)))
-    model.add(TimeDistributed(MaxPooling1D(1)))
-    model.add(TimeDistributed(Flatten()))
-    model.add(Bidirectional(LSTM(100, return_sequences=True)))
-    model.add(Dropout(0.5))
-    model.add(Bidirectional(LSTM(100, return_sequences=False)))
-    model.add(Dropout(0.5))
-    model.add(Dense(1, activation='linear'))
+    # Build lighter CNN-LSTM Model
+model = tf.keras.Sequential()
+model.add(TimeDistributed(Conv1D(32, 3, activation='relu'), input_shape=(None, 1, 1)))
+model.add(TimeDistributed(MaxPooling1D(1)))
+model.add(TimeDistributed(Flatten()))
+model.add(Bidirectional(LSTM(50, return_sequences=True)))
+model.add(Dropout(0.3))
+model.add(Bidirectional(LSTM(50, return_sequences=False)))
+model.add(Dropout(0.3))
+model.add(Dense(1, activation='linear'))
 
-    model.compile(optimizer='adam', loss='mse', metrics=[RootMeanSquaredError()])
+model.compile(optimizer='adam', loss='mse', metrics=[RootMeanSquaredError()])
+
 
     st.subheader("Training CNN-LSTM Model...")
     history = model.fit(train_X, train_Y, validation_data=(test_X, test_Y),
