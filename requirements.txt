@@ -1,15 +1,6 @@
-# Streamlit for the web app
 streamlit==1.26.0
-
-# Data manipulation
 pandas==2.1.1
 numpy==1.26.0
-
-# Fetch stock data from Yahoo Finance
 yfinance==0.2.30
-
-# Machine learning / metrics
 scikit-learn==1.3.2
-
-# TensorFlow CPU-only version for Streamlit Cloud
 tensorflow-cpu==2.15.0
