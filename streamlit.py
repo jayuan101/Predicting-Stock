@@ -17,11 +17,9 @@ st.set_page_config(layout="wide")
 # --------------------------
 def main():
     st.title("Yahoo Finance Stock Prediction with CNN-LSTM")
-    st.write("This app fetches stock data, trains a CNN-LSTM model, and predicts stock prices.")
+    st.write("Fetch historical stock data, train a CNN-LSTM model, and predict stock prices.")
 
-    # --------------------------
     # User Inputs
-    # --------------------------
     ticker = st.text_input("Enter a stock ticker (e.g., AAPL, MSFT):")
     period = st.selectbox("Select period:", ["1y", "2y", "5y", "10y", "max"])
     interval = st.selectbox("Select interval:", ["1d", "1wk", "1mo"])
@@ -31,9 +29,7 @@ def main():
         st.info("Please enter a ticker symbol to continue.")
         return
 
-    # --------------------------
     # Fetch Stock Data
-    # --------------------------
     try:
         data = yf.download(ticker, period=period, interval=interval)
         if data.empty:
@@ -43,9 +39,7 @@ def main():
         st.error(f"Error fetching data: {e}")
         return
 
-    # --------------------------
     # Preprocess Data
-    # --------------------------
     price_col = "Adj Close" if "Adj Close" in data.columns else data.columns[3]  # fallback to Close
     data['Price'] = data[price_col]
     st.subheader(f"Data Preview for {ticker}")
@@ -73,9 +67,7 @@ def main():
 
     st.write(f"Training samples: {len(train_X)}, Testing samples: {len(test_X)}")
 
-    # --------------------------
     # Build CNN-LSTM Model
-    # --------------------------
     model = tf.keras.Sequential()
     model.add(TimeDistributed(Conv1D(64, 3, activation='relu'), input_shape=(None, 1, 1)))
     model.add(TimeDistributed(MaxPooling1D(1)))
@@ -92,9 +84,7 @@ def main():
     history = model.fit(train_X, train_Y, validation_data=(test_X, test_Y),
                         epochs=10, batch_size=32, verbose=1, shuffle=False)
 
-    # --------------------------
     # Predictions and Metrics
-    # --------------------------
     y_pred = model.predict(test_X).flatten()
     test_Y_flat = test_Y.flatten()
     y_pred_inv = scaler.inverse_transform(y_pred.reshape(-1,1)).flatten()
@@ -107,9 +97,7 @@ def main():
     st.write("Mean Poisson Deviance:", mean_poisson_deviance(test_Y_inv, y_pred_inv))
     st.write("Mean Gamma Deviance:", mean_gamma_deviance(test_Y_inv, y_pred_inv))
 
-    # --------------------------
     # Plot Predictions
-    # --------------------------
     st.subheader("Predicted vs Actual Prices")
     result_df = pd.DataFrame({'Actual': test_Y_inv, 'Predicted': y_pred_inv})
     st.line_chart(result_df)
