@@ -1,17 +1,22 @@
-# Stock Price Prediction App
+# Yahoo Finance Stock Prediction App with CNN-LSTM
 
-This is a **Streamlit-based web application** for exploring and predicting stock prices. The app allows users to upload CSV stock data or fetch stock data directly from Yahoo Finance using ticker symbols. It includes preprocessing, visualization, and the ability to integrate machine learning models for prediction.
+This Streamlit web app allows users to fetch historical stock data from **Yahoo Finance**, train a **CNN-LSTM neural network**, and predict future stock prices. It also provides interactive charts and multiple regression evaluation metrics.
 
 ---
 
 ## Features
 
-- Upload a CSV file containing stock price data.
-- Fetch stock data using a ticker symbol (e.g., AAPL, MSFT) via `yfinance`.
-- Automatic detection of the **Adjusted Close** column for price analysis.
-- Interactive data preview using Streamlit’s table and chart components.
-- Visualization of stock prices over time with interactive line charts.
-- Preprocessing ensures data is sorted by date and ready for modeling.
+- Fetch stock data directly from **Yahoo Finance** using ticker symbols (e.g., `AAPL`, `MSFT`).  
+- Automatically handles **Adjusted Close** or fallback price columns.  
+- Preprocesses data with **sliding windows** and scales it for neural network training.  
+- Trains a **CNN-LSTM** model for stock price prediction.  
+- Calculates and displays advanced regression metrics:
+  - R² Score  
+  - Explained Variance Score  
+  - Max Error  
+  - Mean Poisson Deviance  
+  - Mean Gamma Deviance  
+- Interactive line chart comparing **predicted vs actual prices**.  
 
 ---
 
