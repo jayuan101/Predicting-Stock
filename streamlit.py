@@ -1,56 +1,45 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 import yfinance as yf
 import warnings
 
-warnings.filterwarnings("ignore", category=FutureWarning)
-
-# Function to preprocess data safely
-def preprocess_data(df):
-    # Detect the Adjusted Close column automatically
-    adj_col_candidates = [col for col in df.columns if 'Adj' in col and 'Close' in col]
-    if not adj_col_candidates:
-        st.error("Adjusted Close column not found in the dataset!")
-        return None
-    adj_col = adj_col_candidates[0]
-    
-    df['Price'] = df[adj_col]
-    # Additional preprocessing steps
-    df['Date'] = pd.to_datetime(df.index) if df.index.name is None else pd.to_datetime(df['Date'])
-    df = df.sort_values('Date')
-    df.reset_index(drop=True, inplace=True)
-    return df
+warnings.filterwarnings("ignore")
 
 # Streamlit App
 def main():
-    st.title("Stock Price Prediction App")
+    st.title("Yahoo Finance Stock Price Viewer")
 
-    st.write("Upload your stock CSV file or use yfinance ticker.")
+    st.write("""
+    Enter a stock ticker symbol (e.g., AAPL, MSFT) to fetch historical stock prices from Yahoo Finance.
+    """)
 
-    # File uploader
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    ticker_input = st.text_input("Or enter a ticker symbol (e.g., AAPL)")
+    # User input for ticker
+    ticker_input = st.text_input("Enter a ticker symbol:")
 
-    if uploaded_file:
-        stock_data = pd.read_csv(uploaded_file)
-    elif ticker_input:
-        stock_data = yf.download(ticker_input, period="1y")
-    else:
-        st.info("Please upload a CSV or enter a ticker symbol to continue.")
-        return
+    # User input for time period
+    period = st.selectbox("Select period:", ["1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "max"])
+    interval = st.selectbox("Select interval:", ["1d", "1wk", "1mo"])
 
-    # Preprocess data
-    stock_data = preprocess_data(stock_data)
-    if stock_data is None:
-        return
+    if ticker_input:
+        try:
+            # Download stock data from Yahoo Finance
+            stock_data = yf.download(ticker_input, period=period, interval=interval)
+            
+            if stock_data.empty:
+                st.error("No data found for this ticker.")
+                return
 
-    st.subheader("Data Preview")
-    st.dataframe(stock_data.head())
+            # Preprocess: create a Price column from Adjusted Close
+            stock_data['Price'] = stock_data['Adj Close']
 
-    # Additional code for model training, predictions, and visualization
-    # For example: display line chart of prices
-    st.subheader("Stock Price Over Time")
-    st.line_chart(stock_data['Price'])
+            st.subheader("Data Preview")
+            st.dataframe(stock_data.head())
+
+            st.subheader("Adjusted Close Price Over Time")
+            st.line_chart(stock_data['Price'])
+
+        except Exception as e:
+            st.error(f"Error fetching data: {e}")
 
 if __name__ == "__main__":
     main()
