@@ -12,11 +12,10 @@ requests>=2.31.0
 
 # Machine learning
 scikit-learn>=1.3.2
-xgboost>=1.7.6
-
-# Deep learning
-tensorflow
 
 # Visualization
 matplotlib>=3.8.1
-seaborn>=0.12.2  # compatible with Python 3.11
+seaborn>=0.12.2
+
+# Deep learning (optional: only if training locally)
+tensorflow-cpu>=2.15.0
