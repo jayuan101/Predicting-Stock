@@ -22,23 +22,26 @@ except Exception:
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import (
     explained_variance_score,
-    mean_poisson_deviance,
-    mean_gamma_deviance,
     r2_score,
     max_error,
 )
 from sklearn.ensemble import RandomForestRegressor
 
-st.set_page_config(page_title="Stock Prediction (CNN-LSTM)", layout="wide")
-
+# --------------------------
+# App Config
+# --------------------------
+st.set_page_config(
+    page_title="Stock Price Predictor",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # --------------------------
 # Helpers
 # --------------------------
 @st.cache_data(show_spinner=False)
 def download_prices(ticker: str, period: str, interval: str) -> pd.DataFrame:
-    df = yf.download(ticker, period=period, interval=interval, auto_adjust=False)
-    return df
+    return yf.download(ticker, period=period, interval=interval, auto_adjust=False)
 
 def make_sequences(series: np.ndarray, window: int):
     X, y = [], []
@@ -66,27 +69,34 @@ def build_tf_model(window_size: int) -> "tf.keras.Model":
 # Streamlit App
 # --------------------------
 def main():
-    st.title("Yahoo Finance Stock Prediction — CNN-LSTM (with fallback)")
-    st.write("Fetch historical stock data, train a CNN-LSTM model, and compare predictions with actual prices.")
+    st.title("📈 Stock Price Prediction")
+    st.markdown(
+        """
+        This app downloads stock price data from **Yahoo Finance**  
+        and uses a **CNN-LSTM deep learning model** (or a fallback machine learning model)  
+        to predict prices and compare them with actual values.  
+        """
+    )
 
+    # Sidebar
     with st.sidebar:
-        st.subheader("Parameters")
-        ticker = st.text_input("Ticker", value="AAPL", help="Example: AAPL, MSFT, TSLA")
-        period = st.selectbox("Period", ["1y", "2y", "5y", "10y", "max"], index=0)
-        interval = st.selectbox("Interval", ["1d", "1wk", "1mo"], index=0)
-        window_size = st.number_input("Sliding window size (timesteps)", min_value=5, max_value=120, value=30, step=1)
-        test_size_pct = st.slider("Test set percentage", 10, 40, 20, help="Fraction of sequences for testing")
-        epochs = st.number_input("Epochs (TensorFlow)", min_value=1, max_value=200, value=20)
-        batch_size = st.number_input("Batch size (TensorFlow)", min_value=8, max_value=512, value=64, step=8)
-        seed = st.number_input("Random seed", min_value=0, max_value=2**32-1, value=42, step=1)
+        st.header("⚙️ Settings")
+        ticker = st.text_input("Stock Ticker", value="AAPL", help="Example: AAPL, MSFT, TSLA")
+        period = st.selectbox("History Period", ["1y", "2y", "5y", "10y", "max"], index=0)
+        interval = st.selectbox("Data Interval", ["1d", "1wk", "1mo"], index=0)
+        window_size = st.slider("Window Size (timesteps)", 5, 120, 30, help="How many past days to use for prediction")
+        test_size_pct = st.slider("Test Set (%)", 10, 40, 20, help="Portion of data reserved for testing")
+        epochs = st.slider("Training Epochs (if TF available)", 5, 100, 20)
+        batch_size = st.selectbox("Batch Size (if TF available)", [16, 32, 64, 128], index=2)
+        seed = st.number_input("Random Seed", min_value=0, max_value=9999, value=42)
 
     if not ticker:
-        st.info("Enter a stock ticker to continue.")
+        st.info("👆 Enter a stock ticker symbol in the sidebar to begin.")
         return
 
     # Download data
     try:
-        with st.spinner("Downloading data from Yahoo Finance..."):
+        with st.spinner("Fetching stock data..."):
             data = download_prices(ticker, period, interval)
         if data is None or data.empty:
             st.error("No data found for this ticker/period/interval.")
@@ -96,48 +106,40 @@ def main():
         return
 
     # Select price column
-    price_col = "Adj Close" if "Adj Close" in data.columns else ("Close" if "Close" in data.columns else data.columns[3])
-    data = data.copy()
+    price_col = "Adj Close" if "Adj Close" in data.columns else "Close"
     data["Price"] = data[price_col]
-    st.subheader(f"Preview of {ticker}")
+
+    st.subheader(f"📊 Recent Data for {ticker}")
     st.dataframe(data.tail(10))
 
-    # Scale
+    # Scale and create sequences
     scaler = MinMaxScaler()
     scaled = scaler.fit_transform(data["Price"].values.reshape(-1, 1))
-
-    # Create sequences
     X, Y = make_sequences(scaled, window_size)
-    if len(X) < 50:
-        st.warning("Too few samples after creating sequences. Try a larger period or smaller window.")
     X_tf = X.reshape((X.shape[0], X.shape[1], 1))  # for TF
-    seq_dates = data.index[window_size:]           # align dates with labels
+    seq_dates = data.index[window_size:]
 
     # Train/test split
-    test_size = int(len(X) * test_size_pct / 100.0)
-    test_size = max(test_size, 1)
+    test_size = max(1, int(len(X) * test_size_pct / 100.0))
     split = len(X) - test_size
-
     X_train_tf, X_test_tf = X_tf[:split], X_tf[split:]
     y_train, y_test = Y[:split], Y[split:]
-
     X_train_sk, X_test_sk = X[:split], X[split:]
     dates_test = seq_dates[split:]
 
-    st.write(f"**Train samples:** {len(X_train_tf)} | **Test samples:** {len(X_test_tf)}")
+    st.write(f"✅ Training samples: {len(X_train_tf)} | Testing samples: {len(X_test_tf)}")
 
     np.random.seed(seed)
     if TF_AVAILABLE:
         tf.random.set_seed(seed)
 
     # Train model
-    use_fallback = False
     if TF_AVAILABLE:
-        st.subheader("Training CNN-LSTM model (TensorFlow)...")
-        with st.spinner("Training..."):
+        st.subheader("🤖 Training CNN-LSTM model...")
+        with st.spinner("Training deep learning model..."):
             model = build_tf_model(window_size)
             callbacks = [EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True)]
-            history = model.fit(
+            model.fit(
                 X_train_tf, y_train,
                 validation_data=(X_test_tf, y_test),
                 epochs=int(epochs),
@@ -148,12 +150,9 @@ def main():
             )
         y_pred_scaled = model.predict(X_test_tf, verbose=0).reshape(-1, 1)
     else:
-        use_fallback = True
-
-    if use_fallback:
-        st.subheader("TensorFlow not available. Using fallback model (RandomForest).")
-        model_sk = RandomForestRegressor(n_estimators=400, random_state=seed, n_jobs=-1)
-        with st.spinner("Training RandomForest..."):
+        st.subheader("⚡ TensorFlow not available — using fallback model (RandomForest)")
+        with st.spinner("Training RandomForest model..."):
+            model_sk = RandomForestRegressor(n_estimators=300, random_state=seed, n_jobs=-1)
             model_sk.fit(X_train_sk, y_train.ravel())
         y_pred_scaled = model_sk.predict(X_test_sk).reshape(-1, 1)
 
@@ -162,37 +161,21 @@ def main():
     y_test_inv = scaler.inverse_transform(y_test).ravel()
 
     # Metrics
-    st.subheader("Performance Metrics (Test set)")
-    try:
-        mpd = mean_poisson_deviance(y_test_inv, y_pred)
-    except Exception:
-        mpd = np.nan
-    try:
-        mgd = mean_gamma_deviance(y_test_inv, y_pred)
-    except Exception:
-        mgd = np.nan
-
+    st.subheader("📐 Model Performance (Test Set)")
     col1, col2, col3 = st.columns(3)
-    col1.metric("R²", f"{r2_score(y_test_inv, y_pred):.4f}")
-    col2.metric("Explained Var", f"{explained_variance_score(y_test_inv, y_pred):.4f}")
+    col1.metric("R² Score", f"{r2_score(y_test_inv, y_pred):.4f}")
+    col2.metric("Explained Variance", f"{explained_variance_score(y_test_inv, y_pred):.4f}")
     col3.metric("Max Error", f"{max_error(y_test_inv, y_pred):.2f}")
-    st.caption(f"Mean Poisson Deviance: {mpd:.4f} | Mean Gamma Deviance: {mgd:.4f}")
 
-    # Chart
-    st.subheader("Predicted vs Actual Prices")
+    # Plot
+    st.subheader("📉 Predicted vs Actual Prices")
     result_df = pd.DataFrame({"Actual": y_test_inv, "Predicted": y_pred}, index=pd.Index(dates_test, name="Date"))
     st.line_chart(result_df)
 
-    with st.expander("Download Results (CSV)"):
+    # Download option
+    with st.expander("⬇️ Download Results"):
         csv = result_df.to_csv(index=True).encode("utf-8")
         st.download_button("Download CSV", data=csv, file_name=f"{ticker}_pred_vs_actual.csv", mime="text/csv")
-
-    if use_fallback:
-        st.info(
-            "Running in **fallback mode** (scikit-learn) because TensorFlow is not available.\n\n"
-            "On Streamlit Community you can try adding `tensorflow-cpu` to `requirements.txt`. "
-            "If the build fails, keep using fallback mode."
-        )
 
 
 if __name__ == "__main__":
