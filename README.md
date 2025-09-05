@@ -37,6 +37,42 @@ This is an interactive **Streamlit web app** that allows you to:
 git clone https://github.com/your-username/stock-cnn-lstm-streamlit.git
 cd stock-cnn-lstm-streamlit
 
+2. Create a virtual environment (optional but recommended)
+python -m venv venv
+source venv/bin/activate   # On Mac/Linux
+venv\Scripts\activate      # On Windows
+
+3. Install dependencies
+pip install -r requirements.txt
+
+
+requirements.txt should contain:
+
+streamlit
+pandas
+numpy
+yfinance
+tensorflow
+scikit-learn
+
+▶️ Run the App
+streamlit run app.py
+
+
+Then open your browser at http://localhost:8501
+
+📊 Example
+
+Enter ticker: AAPL
+
+Period: 2y
+
+Interval: 1d
+
+Window size: 20
+
+Train the model and view predictions 📉📈
+
 
 ├── app.py              # Main Streamlit app
 ├── requirements.txt    # Python dependencies
