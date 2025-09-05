@@ -1,29 +1,67 @@
-# Yahoo Finance Stock Prediction App with CNN-LSTM
+# 📈 Stock Price Prediction with CNN-LSTM (Streamlit App)
 
-This Streamlit web app allows users to fetch historical stock data from **Yahoo Finance**, train a **CNN-LSTM neural network**, and predict future stock prices. It also provides interactive charts and multiple regression evaluation metrics.
+This is an interactive **Streamlit web app** that allows you to:
 
----
-
-## Features
-
-- Fetch stock data directly from **Yahoo Finance** using ticker symbols (e.g., `AAPL`, `MSFT`).  
-- Automatically handles **Adjusted Close** or fallback price columns.  
-- Preprocesses data with **sliding windows** and scales it for neural network training.  
-- Trains a **CNN-LSTM** model for stock price prediction.  
-- Calculates and displays advanced regression metrics:
-  - R² Score  
-  - Explained Variance Score  
-  - Max Error  
-  - Mean Poisson Deviance  
-  - Mean Gamma Deviance  
-- Interactive line chart comparing **predicted vs actual prices**.  
+- Fetch historical stock data directly from **Yahoo Finance**
+- Train a **CNN-LSTM deep learning model** on stock prices
+- Predict and visualize future price movements
+- View model performance with key evaluation metrics
 
 ---
 
-## Installation
+## 🚀 Features
+- **Ticker Input**: Enter any stock ticker (e.g., `AAPL`, `MSFT`, `TSLA`)
+- **Customizable Options**:
+  - Select data period (`1y`, `2y`, `5y`, `10y`, or `max`)
+  - Choose data interval (`1d`, `1wk`, or `1mo`)
+  - Adjust the sliding window size for training
+- **Model Training**:
+  - Hybrid **CNN + LSTM** neural network
+  - Train/test split with real-time training feedback
+- **Performance Metrics**:
+  - R² Score
+  - Explained Variance
+  - Max Error
+  - Mean Poisson Deviance
+  - Mean Gamma Deviance
+- **Visualizations**:
+  - Interactive preview of stock data
+  - Line chart comparing actual vs predicted prices
 
-1. **Clone the repository**
+---
 
+## 🛠 Installation
+
+### 1. Clone this repository
 ```bash
-git clone https://github.com/jayuan101/Predicting-Stock.git
-cd Predicting-Stock
+git clone https://github.com/your-username/stock-cnn-lstm-streamlit.git
+cd stock-cnn-lstm-streamlit
+
+
+├── app.py              # Main Streamlit app
+├── requirements.txt    # Python dependencies
+└── README.md           # Project documentation
+
+
+🧠 Model Architecture
+
+CNN Layers for feature extraction
+
+Bidirectional LSTMs for sequence learning
+
+Dropout layers for regularization
+
+Dense layer for final prediction
+
+⚠️ Disclaimer
+
+This project is for educational purposes only.
+It is not financial advice — use predictions responsibly.
+
+🙌 Acknowledgements
+
+Streamlit
+
+Yahoo Finance API (yfinance)
+
+TensorFlow / Keras
